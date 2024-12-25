@@ -20,6 +20,7 @@
                 <li><a href="<?php echo site_url('main/produk')?>">Products</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="<?php echo site_url("main/login")?>">Login</a></li>
             </ul>
             <div class="cart-icon">
                 <a href="#"><i class="fas fa-shopping-cart"></i></a>
