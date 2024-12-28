@@ -9,11 +9,13 @@ class Main extends CI_Controller{
         $this->load->view('produk');
     }
 
-    public function login() {
-        $this->load->view('login');
-    }
+    // public function login() {
+    //     // $this->load->view('login');
+    //     redirect('authcontroller/login');
+    // }
 
-    public function register() {
-        $this->load->view('register');
-    }
+    // public function register() {
+    //     // $this->load->view('register');
+    //     redirect('authcontroller/register');
+    // }
 }

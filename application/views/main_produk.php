@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finest Garment - Fashion Store</title>
+    <title>Gaweo kaos</title>
     <link rel="stylesheet" href="<?php echo base_url('asset/css/main.css')?>">
     <!-- Add font-awesome icons for cart or other features if needed -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -13,14 +13,14 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="#">Finest Garment</a>
+                <a href="#">Gaweo kaos</a>
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="<?php echo site_url('main/produk')?>">Products</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="<?php echo site_url("main/login")?>">Login</a></li>
+                <li><a href="<?php echo site_url("index.php/authcontroller/index_login")?>">Login</a></li>
             </ul>
             <div class="cart-icon">
                 <a href="#"><i class="fas fa-shopping-cart"></i></a>

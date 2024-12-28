@@ -119,7 +119,21 @@
 <body>
     <div class="login-container">
         <h2>REGISTER</h2>
-        <form action="<?php echo base_url('/authcontroller/register')?>" method="POST">
+
+        <!-- Flash Message -->
+        <?php if ($this->session->flashdata('error')): ?>
+        <div style="color: red; text-align: center; margin-bottom: 10px;">
+            <?= $this->session->flashdata('error'); ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($this->session->flashdata('success')): ?>
+        <div style="color: green; text-align: center; margin-bottom: 10px;">
+            <?= $this->session->flashdata('success'); ?>
+        </div>
+        <?php endif; ?>
+
+        <form action="<?php echo site_url('index.php/authcontroller/register');?>" method="POST">
             <div>
                 <label for="nama" class="form-label">Nama:</label>
                 <input type="text" class="form-control" id="nama" placeholder="Masukkan Nama" name="nama">
@@ -131,11 +145,6 @@
             <div>
                 <label for="pwd" class="form-label">Password:</label>
                 <input type="password" class="form-control" id="pwd" placeholder="Masukkan password" name="password">
-            </div>
-            <div>
-                <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="remember"> Remember me
-                </label>
             </div>
             <div class="login-text">
             <p>Sudah Punya Akun? <a href="<?php echo site_url("main/login")?>">Login</a></p>

@@ -5,9 +5,10 @@ class AuthController extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        // Memuat model yang digunakan untuk autentikasi
+        $this->load->library('form_validation');
         $this->load->model('User_model');
-        $this->load->helper('url');
+        $this->load->helper(['url', 'form']);
+        $this->load->library(['session', 'form_validation']);
     }
 
     // Menampilkan halaman login
@@ -20,69 +21,87 @@ class AuthController extends CI_Controller {
         $this->load->view('register');
     }
 
-
-    // Proses login
     public function login() {
-        $email = $this->input->post('email');
-        $password = $this->input->post('password');
-        
-        // Validasi input (misalnya jika email kosong)
-        if (empty($email) || empty($password)) {
-            $this->session->set_flashdata('error', 'Email dan password harus diisi.');
-            redirect('authcontroller/index_login');
+        // Jika user sudah login, redirect sesuai role
+        if ($this->session->userdata('user_id')) {
+            $role = $this->session->userdata('user_role');
+            redirect($role === 'admin' ? 'home_admin' : 'main_produk');
         }
-
-        // Memanggil method untuk memeriksa kredensial pengguna
-        $user = $this->User_model->check_login($email, $password);
-
-        if ($user) {
-            // Jika login berhasil, simpan data pengguna dalam sesi
-            $this->session->set_userdata('user_id', $user['id_user']);
-            $this->session->set_userdata('user_email', $user['email']);
-            redirect('dashboard'); // Redirect ke halaman dashboard atau halaman yang diinginkan
-        } else {
-            // Jika gagal login, beri pesan error
-            $this->session->set_flashdata('error', 'Email atau password salah.');
-            redirect('authcontroller/index');
+    
+        // Jika ada form POST
+        if ($this->input->server('REQUEST_METHOD') === 'POST') {
+            // Ambil data dari form
+            $email = trim($this->input->post('email'));
+            $password = trim($this->input->post('password'));
+            // var_dump($email);exit();
+            // // Debug untuk memastikan data diterima
+            log_message('debug', 'Email: ' . $email);
+            log_message('debug', 'Password: ' . ($password ? '[HIDDEN]' : 'EMPTY'));
+    
+            // Validasi input kosong
+            if (empty($email) || empty($password)) {
+                $this->session->set_flashdata('error', 'Email dan password harus diisi.');
+            } else {
+                // Periksa login dengan model
+                $user = $this->User_model->check_login($email, $password);
+                
+    
+                if ($user) {
+                    // Set session data
+                    $this->session->set_userdata([
+                        'user_id' => $user['id_user'],
+                        'user_email' => $user['email'],
+                        'user_role' => $user['role']
+                    ]);
+                
+                    // Redirect sesuai role
+                    redirect($user['role'] === 'admin' ? 'home_admin' : 'main_produk');
+                } else {
+                    // Jika login gagal
+                    $this->session->set_flashdata('error', 'Email atau password salah.');
+                }
+            }
         }
+    
+        // Load tampilan login
+        $this->load->view('login');
     }
+    
 
-    // Proses registrasi
     public function register() {
-        $name = $this->input->post('name');
-        $email = $this->input->post('email');
-        $password = $this->input->post('password');
-        $role = 'user';
-        
-        // Validasi input (misalnya jika salah satu kolom kosong atau password tidak cocok)
-        if (empty($name) || empty($email) || empty($password)) {
-            $this->session->set_flashdata('error', 'Semua kolom harus diisi.');
-            redirect('authcontroller/index_register');
+        // Jika ada form POST
+        if ($this->input->server('REQUEST_METHOD') == 'POST') {
+            $this->form_validation->set_rules('nama', 'Nama', 'required');
+            $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+            $this->form_validation->set_rules('password', 'Password', 'required|min_length[6]');
+
+            if ($this->form_validation->run() === FALSE) {
+                $this->session->set_flashdata('error', validation_errors('<p>', '</p>'));
+            } else {
+                $name = $this->input->post('nama');
+                $email = $this->input->post('email');
+                $password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+                $role = 'user';
+
+                // Daftarkan user
+                $result = $this->User_model->register_user($name, $email, $password, $role);
+                if ($result) {
+                    $this->session->set_flashdata('success', 'Akun berhasil dibuat. Silakan login.');
+                    redirect('index.php/authcontroller/index_login');
+                } else {
+                    $this->session->set_flashdata('error', 'Email sudah terdaftar.');
+                }
+            }
         }
 
-        // if ($password !== $password_confirm) {
-        //     $this->session->set_flashdata('error', 'Password dan konfirmasi password tidak cocok.');
-        //     redirect('registercontroller/index');
-        // }
-
-        // Memanggil method untuk menyimpan data pengguna baru
-        $result = $this->User_model->register_user($name, $email, $password);
-
-        if ($result) {
-            // Jika registrasi berhasil, redirect ke halaman login
-            $this->session->set_flashdata('success', 'Akun berhasil dibuat. Silakan login.');
-            redirect('authcontroller/index_login');
-        } else {
-            // Jika gagal registrasi (misalnya email sudah terdaftar)
-            $this->session->set_flashdata('error', 'Email sudah terdaftar.');
-            redirect('registercontroller/index');
-        }
+        // Load tampilan register
+        $this->load->view('register');
     }
 
     // Logout
     public function logout() {
         // Menghapus sesi login
         $this->session->sess_destroy();
-        redirect('authcontroller/index'); // Redirect ke halaman login
+        redirect('authcontroller/index_login'); // Redirect ke halaman login
     }
 }

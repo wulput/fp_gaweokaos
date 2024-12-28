@@ -9,16 +9,28 @@ class User_model extends CI_Model {
 
     // Cek kredensial login
     public function check_login($email, $password) {
+        // Cari user berdasarkan email
         $this->db->where('email', $email);
         $query = $this->db->get('user');
         $user = $query->row_array();
-        
-        if ($user && password_verify($password, $user['user_password'])) {
-            return $user;
+    
+        // Jika user tidak ditemukan
+        if (!$user) {
+            log_message('debug', 'User with email ' . $email . ' not found.');
+            return false;  // Email tidak ditemukan
         }
-        
-        return false;
+    
+        // Verifikasi password
+        if (password_verify($password, $user['pass'])) {
+            log_message('debug', 'Password verification successful.');
+            return $user;  // Login berhasil
+        } else {
+            log_message('debug', 'Password verification failed.');
+            return false;  // Password salah
+        }
     }
+    
+    
 
     // Menyimpan data pengguna baru untuk registrasi
     public function register_user($name, $email, $password, $role) {
@@ -34,7 +46,7 @@ class User_model extends CI_Model {
         $data = array(
             'nama' => $name,
             'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'pass' => password_hash($password, PASSWORD_DEFAULT),
             'role' => $role
         );
         

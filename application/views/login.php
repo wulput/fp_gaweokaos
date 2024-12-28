@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <!-- <style>
+    <style>
         /* General Reset*/
         * {
             margin: 0;
@@ -115,12 +115,26 @@
         .register-text a:hover {
             text-decoration: underline;
         }
-    </style> -->
+    </style>
 </head>
 <body>
     <div class="login-container">
         <h2>LOGIN</h2>
-        <form action="<?php echo base_url('authcontroller/login')?>" method="POST">
+
+        <!-- Flash Message -->
+        <?php if ($this->session->flashdata('error')): ?>
+        <div style="color: red; text-align: center; margin-bottom: 10px;">
+            <?= $this->session->flashdata('error'); ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($this->session->flashdata('success')): ?>
+        <div style="color: green; text-align: center; margin-bottom: 10px;">
+            <?= $this->session->flashdata('success'); ?>
+        </div>
+        <?php endif; ?>
+
+        <form action="<?php echo site_url('index.php/authcontroller/login')?>" method="POST">
         <div>
             <label for="email" class="form-label">Email:</label>
             <input type="email" class="form-control" id="email" placeholder="Masukkan email" name="email">
@@ -129,13 +143,8 @@
             <label for="pwd" class="form-label">Password:</label>
             <input type="password" class="form-control" id="pwd" placeholder="Masukkan password" name="password">
         </div>
-        <div class="form-check mb-3">
-            <label class="form-check-label">
-            <input class="form-check-input" type="checkbox" name="remember"> Remember me
-            </label>
-        </div>
         <div class="register-text">
-            <p>Belum Punya Akun? <a href="<?php echo site_url("main/register")?>">Register</a></p>
+            <p>Belum Punya Akun? <a href="<?php echo site_url("index.php/authcontroller/index_register")?>">Register</a></p>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
         </form>
