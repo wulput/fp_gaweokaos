@@ -47,6 +47,7 @@ class User_model extends CI_Model {
             'nama' => $name,
             'email' => $email,
             'pass' => password_hash($password, PASSWORD_DEFAULT),
+            // 'pass' => $password,
             'role' => $role
         );
         

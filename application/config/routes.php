@@ -55,5 +55,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['default_controller'] = 'main';
 $route['authcontroller/login'] = 'AuthController/login';
 $route['authcontroller/register'] = 'AuthController/register';
+$route['main_produk'] = 'Main/index';
+
 
 
